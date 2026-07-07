@@ -21,4 +21,17 @@ Select distinct
         END AS Gender_clean
 From userprofiles;
 
+---Race Checks
+Select distinct Race
+From userprofiles;
+
+Select Distinct
+    CASE 
+        WHEN Race = 'other' THEN 'unknown'
+        WHEN Race = 'None' THEN 'unknown'
+        ELSE Race
+        END AS Race_clean
+From userprofiles;
+
+
 
