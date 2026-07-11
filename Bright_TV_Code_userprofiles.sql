@@ -71,6 +71,61 @@ Select
         WHEN Age >60 THEN 'Pensioner'
         END AS Age_group
 From june_intake.bright_tv_casestudy.userprofiles;
+----------------------------------------------------------
+CREATE OR REPLACE TEMPORARY TABLE processed_userprofiles
+(Select
+    UserID,
+    CASE
+        WHEN (Email IS NOT NULL) OR (Email<>' ') OR (Email NOT IN ('None','other')) THEN 1
+        ELSE 0
+        END AS Email_flag,
+    CASE
+        WHEN (`Social Media Handle` IS NOT NULL) OR (`Social Media Handle`<>' ') OR (`Social Media Handle` NOT IN ('None', 'other')) THEN I
+        ELSE 0
+        END AS Socialmedia_flag,
+    CASE
+        WHEN gender = 'None' THEN 'unknown'
+        WHEN gender = ' ' THEN 'unknown'
+        WHEN gender IS NULL THEN 'unknown'
+        ELSE gender
+        END AS sex,
+    
+    CASE
+        WHEN race = 'other' THEN 'unknown' ---replace other with unknown
+        WHEN race = 'None' THEN 'unknown' ---replace none with unknown
+        WHEN race = ' ' THEN 'unknown' ----replace empty with unknown
+        WHEN race IS NULL THEN 'unknown' ---replace null with unknown
+        ELSE race ---keep it as it is
+        END AS ethnicity ---new column
+    
+    CASE
+        WHEN Province = 'None' THEN 'unknown'
+        WHEN Province = ' ' THEN 'unknown'
+        ELSE Province IS NULL THEN 'unknown'
+        ELSE Province
+        END AS Region
+    
+    AGE,
+    CASE
+        WHEN Age = 0 THEN '01.Infant: 0'
+        WHEN Age between 1 AND 12 THEN '02.Kids: 1 - 12'
+        WHEN Age between 13 AND 17 THEN '03.Youth: 13 - 17'
+        WHEN Age between 18 AND 35 THEN '04.Young Adults: 18 - 35'
+        WHEN Age between 36 AND 50 THEN '05.Adults: 36 -50'
+        WHEN Age >50 AND Age <=60 THEN '06.Elder: 51 -60'
+        WHEN Age >60 THEN '07.Pensioner: >60'
+        END AS Age_group
+FROM june_intake.bright_tv_casestudy.userprofiles);
+
+Select*
+from processed_userprofiles;
+
+---cheking for Duplicates
+Select Count(*) AS cnt,
+        userid
+from processed_userprofiles
+group by userid
+having count(*)>1;
 
 
 
