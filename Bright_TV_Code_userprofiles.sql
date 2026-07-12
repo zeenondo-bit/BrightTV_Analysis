@@ -1,26 +1,32 @@
 -- Databricks notebook source
----Telling Databricks to use 'Bright_TV
+---This code is to check what my data looks like
 Select*
-From june_intake.bright_tv_casestudy.userprofiles;
+From june_intake.bright_tv_casestudy.userprofiles
+LIMIT 5;
 
-Select*
-From june_intake.bright_tv_casestudy.viewership;
+---------------------------------------------------------
+--Checking for Duplicates
+---------------------------------------------------------
+Select Count(*),
+        userid
+From june_intake.bright_tv_casestudy.userprofiles
+Group by userid
+Having count(*)>1;
 
-Use june_intake.bright_tv_casestudy;
 ----------------------------------------------------------
 ---Gender checks
 ----------------------------------------------------------
 Select distinct Gender ---to check what is contained in this categorical column
-From userprofiles;
-
+From june_intake.bright_tv_casestudy.userprofiles;
+--cleaning the gender
 Select distinct
     CASE
         WHEN Gender = 'None' THEN 'Unknown' ---Replaces the value None with unknown
         WHEN Gender = ' ' THEN 'Unknown' ---Replaces the empty space with unknown
-        WHEN Gender = 'Null' THEN 'Unknown' ---Replaces null with unknown
+        WHEN Gender IS NULL THEN 'Unknown' ---Replaces null with unknown
         ELSE Gender ---if gender is male or female, return it as it is
         END AS Sex ---new column name
-From userprofiles;
+From june_intake.bright_tv_casestudy.userprofiles;
 -----------------------------------------------------------------
 ---Race Checks
 ------------------------------------------------------------------
@@ -72,15 +78,16 @@ Select
         END AS Age_group
 From june_intake.bright_tv_casestudy.userprofiles;
 ----------------------------------------------------------
-CREATE OR REPLACE TEMPORARY TABLE processed_userprofiles
-(Select
+
+---Combining above cleaned columns into one
+Select
     UserID,
     CASE
         WHEN (Email IS NOT NULL) OR (Email<>' ') OR (Email NOT IN ('None','other')) THEN 1
         ELSE 0
         END AS Email_flag,
     CASE
-        WHEN (`Social Media Handle` IS NOT NULL) OR (`Social Media Handle`<>' ') OR (`Social Media Handle` NOT IN ('None', 'other')) THEN I
+        WHEN (`Social Media Handle` IS NOT NULL) OR (`Social Media Handle`<>' ') OR (`Social Media Handle` NOT IN ('None', 'other')) THEN 1
         ELSE 0
         END AS Socialmedia_flag,
     CASE
@@ -91,21 +98,20 @@ CREATE OR REPLACE TEMPORARY TABLE processed_userprofiles
         END AS sex,
     
     CASE
-        WHEN race = 'other' THEN 'unknown' ---replace other with unknown
-        WHEN race = 'None' THEN 'unknown' ---replace none with unknown
-        WHEN race = ' ' THEN 'unknown' ----replace empty with unknown
-        WHEN race IS NULL THEN 'unknown' ---replace null with unknown
-        ELSE race ---keep it as it is
-        END AS ethnicity ---new column
+        WHEN race = 'other' THEN 'unknown' 
+        WHEN race = 'None' THEN 'unknown' 
+        WHEN race = ' ' THEN 'unknown' 
+        WHEN race IS NULL THEN 'unknown' 
+        ELSE race 
+        END AS ethnicity,
     
-    CASE
+  CASE 
         WHEN Province = 'None' THEN 'unknown'
         WHEN Province = ' ' THEN 'unknown'
-        ELSE Province IS NULL THEN 'unknown'
         ELSE Province
-        END AS Region
+        END AS Region,
     
-    AGE,
+    Age,
     CASE
         WHEN Age = 0 THEN '01.Infant: 0'
         WHEN Age between 1 AND 12 THEN '02.Kids: 1 - 12'
@@ -115,17 +121,9 @@ CREATE OR REPLACE TEMPORARY TABLE processed_userprofiles
         WHEN Age >50 AND Age <=60 THEN '06.Elder: 51 -60'
         WHEN Age >60 THEN '07.Pensioner: >60'
         END AS Age_group
-FROM june_intake.bright_tv_casestudy.userprofiles);
+FROM june_intake.bright_tv_casestudy.userprofiles;
 
-Select*
-from processed_userprofiles;
 
----cheking for Duplicates
-Select Count(*) AS cnt,
-        userid
-from processed_userprofiles
-group by userid
-having count(*)>1;
 
 
 
