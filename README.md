@@ -26,6 +26,7 @@ Analysis of BrightTV user profiles and viewing transactions to identify what dri
    Powerpoint - Final 20-minute stakeholder presentation
 
 **3. Methodology**
+
    Profiled both tables, then cleaned: timestamps converted UTC → SAST (+2), duplicate channel spellings consolidated, invalid ages (920 profiles aged 0) excluded    from age analysis, and missing demographics retained as Unknown to preserve session volume.
 
    Viewership was joined to profiles on UserID, matching 97.4% of sessions. KPIs — sessions, watch hours, average session length and sessions per user — were then    sliced by day, hour, channel, province, age and gender in Excel and Power BI.
@@ -39,10 +40,12 @@ Analysis of BrightTV user profiles and viewing transactions to identify what dri
    - The customer database is unreliable — 3,765 duplicate emails and ~13% missing demographics limit CVM targeting
 
 **5. Recommendations**
+
    Content for low days (Mon–Tue)
    - sport highlights and magazine shows on Monday evenings to extend the weekend peak; anchor Monday prime time (17:00–20:00) with    Channel O, Trace TV and           Africa Magic, which already over-index on Mondays; late-afternoon kids' blocks to capture household viewing.
 
    Growing the user base
+   
     - Reactivate the 989 dormant profiles and 51% single-session cohort, timed to a live fixture
     - Fix the contact database — de-duplicate and capture demographics at sign-up; this gates everything else
     - Convert events into habits with follow-up recommendations after live sport
